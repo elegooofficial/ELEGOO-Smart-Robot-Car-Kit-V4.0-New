@@ -2,7 +2,7 @@
 
 [English README](./README.md)
 
-ELEGOO Smart Robot Car Kit V4.0 New 是一套基于 Arduino 的智能小车程序，适用于 ELEGOO Smart Robot Car Kit V4.0 平台。当前固件版本为 `2.1.2`，主程序入口为 `SmartRobotCarV4.0.ino`。
+ELEGOO Smart Robot Car Kit V4.0 New 是一套基于 Arduino 的智能小车程序，适用于 ELEGOO Smart Robot Car Kit V4.0 平台。当前固件版本为 `2.1.2`，主程序入口为 `ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino`（Arduino 工具链要求工程文件夹与该文件同名）。
 
 本仓库包含小车的运动控制、循迹、避障、跟随、红外遥控、串口 JSON 控制、RGB 灯光、舵机、超声波测距、电压检测和按键处理等核心逻辑。
 
@@ -20,16 +20,20 @@ ELEGOO Smart Robot Car Kit V4.0 New 是一套基于 Arduino 的智能小车程�
 
 ```text
 .
-|-- SmartRobotCarV4.0.ino        # Arduino 主程序入口
+|-- ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino  # Arduino 主程序入口
 |-- ApplicationFunctionSet.*     # 应用层状态机、串口命令、模式切换
 |-- MotionControl.*              # 运动控制、循迹、避障、跟随算法
 |-- DeviceDriverSet.*            # 电机、舵机、红外、超声波、MPU6050 等驱动
 |-- RgbControl.*                 # RGB LED 控制
 |-- Utils.*                      # 工具函数
-|-- ArduinoJson-v6.11.1.h        # 项目内置 ArduinoJson 头文件
-|-- addLibrary/                  # 可选的附加库目录
-`-- README.txt                   # 原始说明文件
+`-- ArduinoJson-v6.11.1.h        # 项目内置 ArduinoJson 头文件
 ```
+
+## 社区硬件与许可说明
+
+套件自带的底盘为原厂亚克力板。围绕套件自带硬件（电机、车轮、UNO 与扩展板、舵机云台、传感器、电池盒）设计的 3D 打印底盘模型，在社区分支 https://github.com/westondunn/elegoo-smart-car-v4 中维护（见 Pull Request [#1](https://github.com/westondunn/elegoo-smart-car-v4/pull/1) 与 [#2](https://github.com/westondunn/elegoo-smart-car-v4/pull/2)），不涉及固件改动。
+
+本仓库未附带许可证文件，固件仍遵循 ELEGOO 的条款。来自 ELEGOO 官方仓库的资料（原理图、数据手册、底盘板模型）仅以固定提交号引用而不复制，社区分支也不会为其指定任何许可证。
 
 ## 硬件与引脚
 
@@ -78,7 +82,7 @@ ELEGOO Smart Robot Car Kit V4.0 New 是一套基于 Arduino 的智能小车程�
 
 ### Arduino IDE
 
-1. 打开 `SmartRobotCarV4.0.ino`
+1. 打开 `ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino`
 2. 选择 `工具 > 开发板 > Arduino AVR Boards > Arduino Uno`
 3. 通过 USB 连接小车主控板
 4. 选择正确的串口，例如 `COM3`
@@ -118,10 +122,10 @@ arduino-cli upload -p COM3 --fqbn arduino:avr:uno .
 | `D1`、`D2`、`D3`、`D4` | 命令参数 |
 | `T` | 定时时间，单位毫秒 |
 
-示例：控制小车前进，速度 `120`。
+示例：控制小车以速度 `120` 前进 `1000` 毫秒后停止。`N=2` 为定时命令；`N=3` 不定时，忽略 `T`。
 
 ```json
-{"N":3,"H":"1","D1":3,"D2":120,"T":1000}
+{"N":2,"H":"1","D1":3,"D2":120,"T":1000}
 ```
 
 示例：切换到循迹模式。
@@ -130,10 +134,10 @@ arduino-cli upload -p COM3 --fqbn arduino:avr:uno .
 {"N":101,"H":"2","D1":1}
 ```
 
-示例：设置 RGB 灯为红色。
+示例：将 RGB 灯设为红色并保持 `1000` 毫秒。`N=7` 为定时命令；`N=8` 不定时，忽略 `T`。
 
 ```json
-{"N":8,"H":"3","D1":1,"D2":255,"D3":0,"D4":0,"T":1000}
+{"N":7,"H":"3","D1":1,"D2":255,"D3":0,"D4":0,"T":1000}
 ```
 
 ## 主要命令
@@ -141,10 +145,10 @@ arduino-cli upload -p COM3 --fqbn arduino:avr:uno .
 | `N` | 功能 |
 | --- | --- |
 | `1` | 单个或全部电机控制 |
-| `2` / `3` | 小车方向与速度控制 |
+| `2` / `3` | 小车方向与速度控制（`2` 按 `T` 定时，`3` 不定时） |
 | `4` | 左右电机独立速度控制 |
 | `5` | 舵机角度控制 |
-| `7` / `8` | RGB 灯光控制 |
+| `7` / `8` | RGB 灯光控制（`7` 按 `T` 定时，`8` 不定时） |
 | `21` | 获取超声波状态或距离 |
 | `22` | 获取循迹传感器状态 |
 | `23` | 获取离地/地面检测状态 |
@@ -174,7 +178,7 @@ arduino-cli upload -p COM3 --fqbn arduino:avr:uno .
 
 ### 编译提示找不到 `IRremote.hpp` 或 `MPU6050.h`
 
-安装对应库后重新编译。不同版本的库 API 可能有差异，建议优先使用 ELEGOO 官方资料包或本项目 `addLibrary` 中提供的库。
+安装对应库后重新编译。不同版本的库 API 可能有差异，建议优先使用 ELEGOO 官方资料包中提供的库版本。
 
 ### 上传失败
 
@@ -193,6 +197,6 @@ arduino-cli upload -p COM3 --fqbn arduino:avr:uno .
 ## 版本信息
 
 - 当前版本：`2.1.2`
-- 主程序：`SmartRobotCarV4.0.ino`
+- 主程序：`ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino`
 - 作者：ELEGOO
 

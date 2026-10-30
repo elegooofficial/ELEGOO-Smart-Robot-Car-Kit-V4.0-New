@@ -2,7 +2,7 @@
 
 [Chinese version](./README.zh-CN.md)
 
-ELEGOO Smart Robot Car Kit V4.0 New is an Arduino-based robot car project for the ELEGOO Smart Robot Car Kit V4.0 platform. The current firmware version is `2.1.2`, and the main Arduino sketch is `SmartRobotCarV4.0.ino`.
+ELEGOO Smart Robot Car Kit V4.0 New is an Arduino-based robot car project for the ELEGOO Smart Robot Car Kit V4.0 platform. The current firmware version is `2.1.2`, and the main Arduino sketch is `ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino` (the sketch folder must keep the same name for the Arduino toolchain to build it).
 
 This repository contains the core firmware for motion control, line tracking, obstacle avoidance, object following, IR remote control, serial JSON control, RGB lighting, servo control, ultrasonic ranging, voltage detection, and key input handling.
 
@@ -20,16 +20,27 @@ This repository contains the core firmware for motion control, line tracking, ob
 
 ```text
 .
-|-- SmartRobotCarV4.0.ino        # Arduino main sketch
+|-- ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino  # Arduino main sketch
 |-- ApplicationFunctionSet.*     # Application state machine, serial commands, mode switching
 |-- MotionControl.*              # Motion control, tracking, obstacle avoidance, follow logic
 |-- DeviceDriverSet.*            # Motor, servo, IR, ultrasonic, MPU6050, and low-level drivers
 |-- RgbControl.*                 # RGB LED control
 |-- Utils.*                      # Utility functions
-|-- ArduinoJson-v6.11.1.h        # Bundled ArduinoJson header
-|-- addLibrary/                  # Optional additional libraries
-`-- README.txt                   # Original documentation file
+`-- ArduinoJson-v6.11.1.h        # Bundled ArduinoJson header
 ```
+
+## Community Hardware and Licensing
+
+The chassis in the kit is the stock acrylic plate set. Custom 3D-printed
+chassis designs built around the kit's own hardware (motors, wheels, UNO and
+shield, servo head, sensors, battery pack) are maintained in the community
+fork at https://github.com/westondunn/elegoo-smart-car-v4 (pull requests [#1](https://github.com/westondunn/elegoo-smart-car-v4/pull/1) and [#2](https://github.com/westondunn/elegoo-smart-car-v4/pull/2)).
+They do not change the firmware.
+
+This repository ships without a license file, so the firmware remains under
+ELEGOO's terms. Material from the official ELEGOO repositories (schematics,
+datasheets, chassis plate models) is referenced by pinned commit rather than
+copied, and the community fork assigns no license to it.
 
 ## Hardware Pin Map
 
@@ -78,7 +89,7 @@ The project includes `ArduinoJson-v6.11.1.h`, so installing ArduinoJson separate
 
 ### Arduino IDE
 
-1. Open `SmartRobotCarV4.0.ino`.
+1. Open `ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino`.
 2. Select `Tools > Board > Arduino AVR Boards > Arduino Uno`.
 3. Connect the robot car controller board by USB.
 4. Select the correct serial port, such as `COM3`.
@@ -118,10 +129,10 @@ Common fields:
 | `D1`, `D2`, `D3`, `D4` | Command parameters |
 | `T` | Timer duration in milliseconds |
 
-Example: move forward at speed `120`.
+Example: move forward at speed `120` for `1000` ms, then stop. `N=2` is the timed variant; `N=3` runs until the next command and ignores `T`.
 
 ```json
-{"N":3,"H":"1","D1":3,"D2":120,"T":1000}
+{"N":2,"H":"1","D1":3,"D2":120,"T":1000}
 ```
 
 Example: switch to line tracking mode.
@@ -130,10 +141,10 @@ Example: switch to line tracking mode.
 {"N":101,"H":"2","D1":1}
 ```
 
-Example: set the RGB LED to red.
+Example: set the RGB LED to red for `1000` ms. `N=7` is the timed variant; `N=8` is untimed and ignores `T`.
 
 ```json
-{"N":8,"H":"3","D1":1,"D2":255,"D3":0,"D4":0,"T":1000}
+{"N":7,"H":"3","D1":1,"D2":255,"D3":0,"D4":0,"T":1000}
 ```
 
 ## Main Commands
@@ -141,10 +152,10 @@ Example: set the RGB LED to red.
 | `N` | Function |
 | --- | --- |
 | `1` | Single or all-motor control |
-| `2` / `3` | Car direction and speed control |
+| `2` / `3` | Car direction and speed control (`2` is timed by `T`, `3` is untimed) |
 | `4` | Independent left/right motor speed control |
 | `5` | Servo angle control |
-| `7` / `8` | RGB lighting control |
+| `7` / `8` | RGB lighting control (`7` is timed by `T`, `8` is untimed) |
 | `21` | Read ultrasonic status or distance |
 | `22` | Read line tracking sensor value |
 | `23` | Read ground detection status |
@@ -174,7 +185,7 @@ Open Library Manager in Arduino IDE, search for `FastLED`, and install it.
 
 ### `IRremote.hpp` or `MPU6050.h` was not found
 
-Install the corresponding library and compile again. Library APIs may differ between versions, so prefer the ELEGOO official package or libraries provided in `addLibrary` when available.
+Install the corresponding library and compile again. Library APIs may differ between versions, so prefer the library versions from the ELEGOO official package when available.
 
 ### Upload failed
 
@@ -193,5 +204,5 @@ Check the battery level, power switch, motor wiring, and motor driver STBY contr
 ## Version
 
 - Firmware version: `2.1.2`
-- Main sketch: `SmartRobotCarV4.0.ino`
+- Main sketch: `ELEGOO-Smart-Robot-Car-Kit-V4.0-New.ino`
 - Author: ELEGOO
